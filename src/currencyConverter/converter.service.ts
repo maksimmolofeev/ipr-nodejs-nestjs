@@ -15,7 +15,7 @@ export class ConverterService {
     private readonly HttpService: HttpService,
   ) {}
 
-  async rubToUsd(value: string) {
+  async converting(value: string) {
     try {
       const { data, status } = await firstValueFrom(
         this.HttpService.get<{
@@ -26,8 +26,7 @@ export class ConverterService {
           `https://currate.ru/api/?get=rates&pairs=USDRUB&key=${this.key}`,
         ).pipe(map((response) => response.data)),
       );
-
-      if (status !== 'success' || !data.USDRUB) {
+      if (Number(status) !== 200 || !data.USDRUB) {
         this.logger.error('Ошибка API, при получении курса доллара');
         throw new InternalServerErrorException(
           'Не удалось получить курс доллара',

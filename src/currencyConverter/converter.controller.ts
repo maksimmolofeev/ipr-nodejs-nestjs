@@ -1,15 +1,15 @@
 import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { ConverterService } from './converter.service';
 
-@Controller('/rubToUsd')
+@Controller('/converting')
 export class ConverterController {
   constructor(private readonly currencyConverterService: ConverterService) {}
   @Get()
-  rubToUsd(@Query('value') value: string) {
+  converting(@Query('value') value: string) {
     if (!value || isNaN(Number(value))) {
       throw new BadRequestException('Параметр value некорректный');
     }
 
-    return this.currencyConverterService.rubToUsd(value);
+    return this.currencyConverterService.converting(value);
   }
 }
