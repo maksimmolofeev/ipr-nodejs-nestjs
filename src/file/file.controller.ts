@@ -14,7 +14,7 @@ export class FileController {
   @Get('/image')
   getImage(@Res() res: Response, @Query('name') name: string) {
     if (!name) {
-      throw new BadRequestException('Name parameter is required');
+      throw new BadRequestException('Параметр name отсутствует');
     }
 
     return this.fileService.getImage(res, name);

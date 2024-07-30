@@ -7,7 +7,7 @@ export class ConverterController {
   @Get()
   rubToUsd(@Query('value') value: string) {
     if (!value || isNaN(Number(value))) {
-      throw new BadRequestException('Invalid value parameter');
+      throw new BadRequestException('Параметр value некорректный');
     }
 
     return this.currencyConverterService.rubToUsd(value);

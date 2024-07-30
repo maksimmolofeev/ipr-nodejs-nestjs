@@ -16,7 +16,6 @@ export class ConverterService {
   ) {}
 
   async rubToUsd(value: string) {
-    this.logger.log('start rubToUsd');
     try {
       const { data, status } = await firstValueFrom(
         this.HttpService.get<{
@@ -29,8 +28,10 @@ export class ConverterService {
       );
 
       if (status !== 'success' || !data.USDRUB) {
-        this.logger.error('Invalid response from currency API');
-        throw new InternalServerErrorException('Failed to get currency rates');
+        this.logger.error('Ошибка API, при получении курса доллара');
+        throw new InternalServerErrorException(
+          'Не удалось получить курс доллара',
+        );
       }
 
       return Number(data.USDRUB) * Number(value);

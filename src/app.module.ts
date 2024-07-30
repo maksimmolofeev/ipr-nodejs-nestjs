@@ -1,8 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConverterModule } from './currencyConverter/converter.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
 import { FileModule } from './file/file.module';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { LoggerModule } from './logger/logger.module';
+import { ErrorMiddleware } from './middlewares/error.middleware';
 
 @Module({
   imports: [
@@ -11,6 +14,11 @@ import { FileModule } from './file/file.module';
     }),
     ConverterModule,
     FileModule,
+    LoggerModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware, ErrorMiddleware).forRoutes('*');
+  }
+}
