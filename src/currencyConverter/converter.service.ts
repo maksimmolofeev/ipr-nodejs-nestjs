@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, map } from 'rxjs';
 import { WinstonLoggerService } from '../logger/logger.service';
@@ -14,7 +18,7 @@ export class ConverterService {
   async rubToUsd(value: string) {
     this.logger.log('start rubToUsd');
     try {
-      const { data } = await firstValueFrom(
+      const { data, status } = await firstValueFrom(
         this.HttpService.get<{
           status: string;
           message: 'rates';
@@ -24,10 +28,18 @@ export class ConverterService {
         ).pipe(map((response) => response.data)),
       );
 
+      if (status !== 'success' || !data.USDRUB) {
+        this.logger.error('Invalid response from currency API');
+        throw new InternalServerErrorException('Failed to get currency rates');
+      }
+
       return Number(data.USDRUB) * Number(value);
     } catch (e) {
       this.logger.error(e.message);
-      throw new HttpException(e.message, 500);
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new InternalServerErrorException('Internal server error');
     }
   }
 }
